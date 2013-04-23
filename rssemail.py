@@ -82,19 +82,17 @@ for lines in file:
     """%(content1,content2,content3)
     encode_content = base64.b64encode(content)
 
-    message = """
-    From: %s <%s>
-    To: %s <%s>
-    Mime-Version: 1.0
-    Content-Type: text/html;charset=UTF-8
-    Content-Transfer-Encoding:base64
-    Subject: =?utf-8?B?%s?=\n
+    message = """From: %s <%s>
+To: %s <%s>
+Mime-Version: 1.0
+Content-Type: text/html;charset=UTF-8
+Content-Transfer-Encoding:base64
+Subject: =?utf-8?B?%s?=
 
-    %s
-    .
-    """%(s_email,s_email,r_email,r_email,base64.b64encode(mail_title),encode_content)
+%s
+"""%(s_email,s_email,r_email,r_email,base64.b64encode(mail_title),encode_content)
 
-    print message
+    #print message
     smtp = smtplib.SMTP()
     smtp.set_debuglevel(0)
     smtp.connect('smtp.%s'%(domain))
