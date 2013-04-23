@@ -69,12 +69,7 @@ for lines in file:
     domain = tmp[1]
     print s_email,",",domain,",",s_passwd,",",r_email
 
-    message = '''From: %s <%s>
-    To: %s <%s>
-    MIME_version: 1.0
-    Content-type: text/html
-    Subject: %s
-
+    content = """
     <html>
     <head>
     </head>
@@ -84,8 +79,22 @@ for lines in file:
     %s
     </body>
     </html>
-    '''%(s_email,s_email,r_email,r_email,mail_title,content1,content2,content3)
-    #print message
+    """%(content1,content2,content3)
+    encode_content = base64.b64encode(content)
+
+    message = """
+    From: %s <%s>
+    To: %s <%s>
+    Mime-Version: 1.0
+    Content-Type: text/html;charset=UTF-8
+    Content-Transfer-Encoding:base64
+    Subject: =?utf-8?B?%s?=\n
+
+    %s
+    .
+    """%(s_email,s_email,r_email,r_email,base64.b64encode(mail_title),encode_content)
+
+    print message
     smtp = smtplib.SMTP()
     smtp.set_debuglevel(0)
     smtp.connect('smtp.%s'%(domain))
