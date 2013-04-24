@@ -62,7 +62,7 @@ for lines in file:
 
     mail_title = get_random_file_content(emailfile, 4, len(lines))
     content = ''
-    for i in range(5,len(lines)-1):
+    for i in range(5,len(lines)):
         content_tmp = get_random_file_content(emailfile, i, len(lines))
         content = content + content_tmp
 
@@ -76,7 +76,7 @@ for lines in file:
     else:
         domain = tmp[1]
 
-    print s_email,",",domain,",",s_passwd,",",r_email,'---',mail_title,'===',content
+    print s_email,",",domain,",",s_passwd,",",r_email
     encode_content = base64.b64encode(content)
     '''
         content = """
@@ -104,7 +104,7 @@ Subject: =?utf-8?B?%s?=
     #print message
     try:
         smtp = smtplib.SMTP()
-        smtp.set_debuglevel(1)
+        smtp.set_debuglevel(0)
         smtp.connect('smtp.%s'%(domain), 25)
         #smtp.helo()
         smtp.starttls()
@@ -118,4 +118,4 @@ Subject: =?utf-8?B?%s?=
         smtp.sendmail(s_email,r_email,message)
         smtp.close()
     except:
-        pass
+        print "%s to %s faild"%(s_email,r_email)
