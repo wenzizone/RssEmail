@@ -7,10 +7,25 @@ import smtplib,base64
 import time,datetime
 
 #print len(sys.argv)
-if len(sys.argv) != 4:
+if len(sys.argv) == 4:
+    delaytime = float(0)
+elif len(sys.argv) == 6:
+    delayoptions = sys.argv[4]
+    delaytime = float(sys.argv[5])
+    if delayoptions == '-m':
+        delaytime = delaytime*60
+    elif delayoptions == '-h':
+        delaytime = delaytime*60*60
+    else:
+        sys.exit('the 5th option should be -m or -h')
+else:
     sys.exit('''
-Usage: rssemail.py emailfile -time time
+Usage: rssemail.py emailfile -time time (-delaytime time)
     -time means : -m -h 
+    -m minutes
+    -h hours
+
+    -delaytime : -m -h
     -m minutes
     -h hours
     ''')
@@ -29,6 +44,8 @@ elif options == '-h':
 else:
     sys.exit('the third option should be -m or -h')
 
+
+# 随机获得csv文件每列的内容
 def get_random_file_content(mailfile,contentpos,maxpos):
     fh = open(mailfile, 'rb')
     fn_size = os.stat(mailfile)[6]
@@ -63,6 +80,7 @@ def get_random_file_content(mailfile,contentpos,maxpos):
     #print line_content
     return line_content
 
+# 随机同时获取csv文件5，6列内容
 def get_random_56_content(mailfile,maxpos,contentpos = [4,5]):
     fh = open(mailfile, 'rb')
     fn_size = os.stat(mailfile)[6]
@@ -99,10 +117,14 @@ def get_random_56_content(mailfile,maxpos,contentpos = [4,5]):
     fh.close()
     return [line_content,mail_title]
 
+#def sendmail():
+
+
 # main
+time.sleep(delaytime)
 if os.path.exists(logdir) == False:
-        #os.mkdir(logdir)
-        pass
+        os.mkdir(logdir)
+        #pass
 logfile = os.path.basename(emailfile)
 logfile = logfile.split('.')[0]
 logfile = logdir+'/'+logfile+'.log'
@@ -124,7 +146,7 @@ while True:
 
         #mail_title = get_random_file_content(emailfile, 4, len(lines))
         (content,mail_title) = get_random_56_content(emailfile,len(lines))
-
+        print mail_title
         for i in range(6,len(lines)):
             content_tmp = get_random_file_content(emailfile, i, len(lines))
             content = content + content_tmp
@@ -156,16 +178,16 @@ while True:
         """%(content1,content2,content3)
         '''
         message = """From: %s <%s>
-    To: %s <%s>
-    Mime-Version: 1.0
-    Content-Type: text/html;charset=UTF-8
-    Content-Transfer-Encoding:base64
-    Subject: =?utf-8?B?%s?=
+To: %s <%s>
+Mime-Version: 1.0
+Content-Type: text/html;charset=UTF-8
+Content-Transfer-Encoding:base64
+Subject: =?utf-8?B?%s?=
 
-    %s
-    """%(s_email,s_email,r_email,r_email,base64.b64encode(mail_title),encode_content)
+%s
+"""%(s_email,s_email,r_email,r_email,base64.b64encode(mail_title),encode_content)
 
-        #print message
+        print message
         try:
             smtp = smtplib.SMTP()
             smtp.set_debuglevel(0)
