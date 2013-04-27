@@ -17,7 +17,7 @@ elif len(sys.argv) == 6:
     elif delayoptions == '-h':
         delaytime = delaytime*60*60
     else:
-        sys.exit('the 5th option should be -m or -h')
+        sys.exit('the 4th option should be -m or -h')
 else:
     sys.exit('''
 Usage: rssemail.py emailfile -time time (-delaytime time)
@@ -42,7 +42,7 @@ if options == '-m':
 elif options == '-h':
     sleeptime = sleeptime*60*60
 else:
-    sys.exit('the third option should be -m or -h')
+    sys.exit('the 2rd option should be -m or -h')
 
 
 # 随机获得csv文件每列的内容
@@ -117,8 +117,25 @@ def get_random_56_content(mailfile,maxpos,contentpos = [4,5]):
     fh.close()
     return [line_content,mail_title]
 
-#def sendmail():
-
+def sendmail(domain,s_email,s_passwd,r_email,message,logfh,port):
+    try:
+        smtp = smtplib.SMTP()
+        smtp.set_debuglevel(0)
+        smtp.connect('smtp.%s'%(domain), port)
+        #smtp.connect('smtp.%s'%(domain), 25)
+        #smtp.helo()
+        smtp.starttls()
+        smtp.login(s_email,s_passwd)
+        smtp.sendmail(s_email,r_email,message)
+        smtp.close()
+        logfh.write("%s to %s success\n"%(s_email,r_email))
+        #logfh.write("success\n")
+        print "%s to %s success"%(s_email,r_email)
+    except:
+        logfh.write("%s to %s faild\n"%(s_email,r_email))
+        #logfh.write("faild\n")
+        print "%s to %s faild"%(s_email,r_email)
+        pass
 
 # main
 time.sleep(delaytime)
@@ -146,7 +163,7 @@ while True:
 
         #mail_title = get_random_file_content(emailfile, 4, len(lines))
         (content,mail_title) = get_random_56_content(emailfile,len(lines))
-        print mail_title
+        #print mail_title
         for i in range(6,len(lines)):
             content_tmp = get_random_file_content(emailfile, i, len(lines))
             content = content + content_tmp
@@ -158,8 +175,10 @@ while True:
             continue
         if tmp[1] == 'hotmail.com':
             domain = 'live.com'
+            port = 587
         else:
             domain = tmp[1]
+            port = 25
 
         #print s_email,",",domain,",",s_passwd,",",r_email
         #print mail_title,'---',content
@@ -186,9 +205,8 @@ Subject: =?utf-8?B?%s?=
 
 %s
 """%(s_email,s_email,r_email,r_email,base64.b64encode(mail_title),encode_content)
-
-        print message
-        try:
+        sendmail(domain,s_email,s_passwd,r_email,message,logfh,port)
+        '''try:
             smtp = smtplib.SMTP()
             smtp.set_debuglevel(0)
             smtp.connect('smtp.%s'%(domain), 587)
@@ -206,7 +224,7 @@ Subject: =?utf-8?B?%s?=
             logfh.write("%s to %s faild\n"%(s_email,r_email))
             #logfh.write("faild\n")
             print "%s to %s faild"%(s_email,r_email)
-            pass
+            pass'''
     logfh.write("==== "+str(datetime.datetime.today())+" ====\n")
     logfh.close()
     fh.close()
