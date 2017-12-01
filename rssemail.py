@@ -50,7 +50,8 @@ def parse_args():
                         required=False, help='发件邮件服务器登录密码')
     parser.add_argument('--port', nargs='?',
                         required=False, help='发件邮件服务器端口')
-    parser.add_argument('-c', nargs='?', required=False, help='变量所在列')
+    parser.add_argument('-c', nargs='?', required=False,
+                        help='变量所在列,0列为接收人邮件地址')
     parser.add_argument('--log', nargs='?', required=False,
                         help='日志存储位置,默认当前程序运行目录')
 

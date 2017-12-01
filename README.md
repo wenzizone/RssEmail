@@ -18,7 +18,7 @@
       --smtp [SMTP]        发件邮件服务器地址
       --passwd [PASSWD]    发件邮件服务器登录密码
       --port [PORT]        发件邮件服务器端口
-      -c [C]               变量所在列
+      -c [C]               变量所在列,0列为接收人邮件地址
       --log [LOG]          日志存储位置,默认当前程序运行目录
 
 
@@ -26,5 +26,5 @@
     python rssemail.py --file ~/Program/tmp/testfile1.csv \
     --title ~/Program/tmp/testtitle.txt \
     --content ~/Program/tmp/testmsg.txt \
-    -t 10 -c 2,5,3 --from noreply@mail.xxxx.cn \
+    -t 10,40 -c 2,5,3 --from noreply@mail.xxxx.cn \
     --smtp smtp.xxxx.com --passwd xxxxxxxx --port 465
