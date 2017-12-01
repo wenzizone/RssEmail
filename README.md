@@ -23,4 +23,8 @@
 
 
 ## Example
-    python rssemail.py --file ~/Program/tmp/testfile1.csv --title ~/Program/tmp/testtitle.txt --content ~/Program/tmp/testmsg.txt -t 10 -c 2,5,3 --from noreply@mail.xxxx.cn --smtp smtp.xxxx.com --passwd xxxxxxxx --port 465
+    python rssemail.py --file ~/Program/tmp/testfile1.csv \
+    --title ~/Program/tmp/testtitle.txt \
+    --content ~/Program/tmp/testmsg.txt \
+    -t 10 -c 2,5,3 --from noreply@mail.xxxx.cn \
+    --smtp smtp.xxxx.com --passwd xxxxxxxx --port 465
