@@ -1,5 +1,7 @@
-## Usage
+## Prepare Environment
+    pip install -r require.txt
 
+## Usage
     usage: rssemail.py [-h] --file [FILE] --content [CONTENT] --title [TITLE]
                        [-t [T]] [--from [FROM]] [--smtp [SMTP]]
                        [--passwd [PASSWD]] [--port [PORT]] [-c [C]] [--log [LOG]]
