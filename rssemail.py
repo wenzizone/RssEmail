@@ -16,6 +16,7 @@ import datetime
 import argparse
 import logging
 import chardet
+import random
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -41,7 +42,8 @@ def parse_args():
     parser.add_argument('--file', nargs='?', required=True, help='变量文件')
     parser.add_argument('--content', nargs='?', required=True, help='邮件内容文件')
     parser.add_argument('--title', nargs='?', required=True, help='邮件标题文件')
-    parser.add_argument('-t', nargs='?', required=False, help='每封邮件间隔时间')
+    parser.add_argument('-t', nargs='?', required=False,
+                        help='每封邮件间隔时间,如-t 30,60')
     parser.add_argument('--from', nargs='?', required=False, help='发件人邮件地址')
     parser.add_argument('--smtp', nargs='?', required=False, help='发件邮件服务器地址')
     parser.add_argument('--passwd', nargs='?',
@@ -84,7 +86,7 @@ def parse_var_file():
     with open(g_varfile) as fp:
         for line in fp:
             dic_vars = {}
-            time.sleep(int(g_delaytime))  # 休眠间隔时间
+            time.sleep(int(generate_random_sleeptime))  # 休眠间隔时间
             line_array = line.split(',')
             to_mail = line_array[0]
             # 设置变量对应的字段，用来替换模板文件中对应的变量位置
@@ -145,6 +147,15 @@ def create_message(vars):
     # return base64.b64encode(msg)
 
 
+# 从给定发送邮件间隔时间随机生成具体的间隔秒数
+def generate_random_sleeptime():
+    global g_delaytime
+
+    delay_array = g_delaytime.split(',')
+
+    return random.randrange(delay_array[0], delay_array[1])
+
+
 # 日志功能
 def logs(level, msg):
     global g_log_folder
@@ -188,7 +199,7 @@ def sendmail(to_email, message, from_email, port, domain='localhost', s_passwd='
     global g_log_folder
 
     try:
-        print("connect to smtp server")
+        logs(1, "connect to smtp server %s" % domain)
         smtp = smtplib.SMTP()
         smtp.set_debuglevel(0)
         smtp.connect('%s' % (domain), port)
@@ -199,7 +210,7 @@ def sendmail(to_email, message, from_email, port, domain='localhost', s_passwd='
             smtp.starttls()
         if s_passwd:
             smtp.login(from_email, s_passwd)
-        print("starting send email")
+        logs(1, "start to send email to %s" % to_email)
         smtp.sendmail(from_email, to_email, message.as_string())
         smtp.close()
         logs(1, "%s to %s success\n" % (from_email, to_email))
