@@ -162,8 +162,8 @@ def generate_random_sleeptime():
     global g_delaytime
 
     delay_array = g_delaytime.split(',')
-
-    return random.randrange(delay_array[0], delay_array[1])
+    d_time = random.randrange(delay_array[0], delay_array[1])
+    return int(d_time)
 
 
 # 日志功能
