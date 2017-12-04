@@ -45,8 +45,8 @@ def parse_args():
     parser.add_argument('--title', nargs='?', required=True, help='邮件标题文件')
     parser.add_argument('-t', nargs='?', required=False,
                         help='每封邮件间隔时间,如-t 30,60')
-    parser.add_argument("--alias", nargs="?", required=False,
-                        help="发件人别名，如果为空则默认使用邮件地址")
+    parser.add_argument('--alias', nargs='?', required=False,
+                        help='发件人别名，如果为空,默认使用邮件地址')
     parser.add_argument('--from', nargs='?', required=False, help='发件人邮件地址')
     parser.add_argument('--smtp', nargs='?', required=False, help='发件邮件服务器地址')
     parser.add_argument('--passwd', nargs='?',

@@ -3,8 +3,8 @@
 
 ## Usage
     usage: rssemail.py [-h] --file [FILE] --content [CONTENT] --title [TITLE]
-                       [-t [T]] [--from [FROM]] [--smtp [SMTP]]
-                       [--passwd [PASSWD]] [--port [PORT]] [-c [C]] [--log [LOG]]
+                   [-t [T]] [--alias [ALIAS]] [--from [FROM]] [--smtp [SMTP]]
+                   [--passwd [PASSWD]] [--port [PORT]] [-c [C]] [--log [LOG]]
 
     邮件群发系统
 
@@ -14,6 +14,7 @@
       --content [CONTENT]  邮件内容文件
       --title [TITLE]      邮件标题文件
       -t [T]               每封邮件间隔时间,如-t 30,60
+      --alias [ALIAS]      发件人别名，如果为空,默认使用邮件地址
       --from [FROM]        发件人邮件地址
       --smtp [SMTP]        发件邮件服务器地址
       --passwd [PASSWD]    发件邮件服务器登录密码
