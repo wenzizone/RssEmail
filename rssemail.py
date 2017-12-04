@@ -92,7 +92,7 @@ def parse_var_file():
     with open(g_varfile) as fp:
         for line in fp:
             dic_vars = {}
-            time.sleep(generate_random_sleeptime)  # 休眠间隔时间
+            time.sleep(float(generate_random_sleeptime()))  # 休眠间隔时间
             line_array = line.split(',')
             to_mail = line_array[0]
             # 设置变量对应的字段，用来替换模板文件中对应的变量位置
@@ -162,8 +162,8 @@ def generate_random_sleeptime():
     global g_delaytime
 
     delay_array = g_delaytime.split(',')
-    d_time = random.randrange(delay_array[0], delay_array[1])
-    return int(d_time)
+
+    return random.randrange(int(delay_array[0]), int(delay_array[1]))
 
 
 # 日志功能
@@ -239,8 +239,12 @@ def sendmail(to_email, message, from_email, port, domain='localhost', s_passwd='
         recipients = getattr(e, "recipients", "None")
         logs(0, "%s was refused" % recipients)
         logs(3, "%s to %s faild" % (from_email, to_email))
-    except Exception, e:
-        logs(0, e)
+    except Exception as e:
+        if hasattr(e, 'message'):
+            logs(0, e.message)
+        else:
+            logs(0, e)
+
         logs(3, "%s to %s faild" % (from_email, to_email))
 
 
