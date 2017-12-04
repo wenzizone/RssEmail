@@ -92,7 +92,7 @@ def parse_var_file():
     with open(g_varfile) as fp:
         for line in fp:
             dic_vars = {}
-            time.sleep(int(generate_random_sleeptime))  # 休眠间隔时间
+            time.sleep(generate_random_sleeptime)  # 休眠间隔时间
             line_array = line.split(',')
             to_mail = line_array[0]
             # 设置变量对应的字段，用来替换模板文件中对应的变量位置
