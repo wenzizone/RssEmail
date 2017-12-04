@@ -97,7 +97,13 @@ def parse_var_file():
             to_mail = line_array[0]
             # 设置变量对应的字段，用来替换模板文件中对应的变量位置
             for i in columns_array:
-                dic_vars['var' + i] = line_array[int(i)]
+                msg_code = chardet.detect(line_array[int(i)])
+
+                if msg_code["encoding"] == "GB2312":
+                    dic_vars[
+                        'var' + i] = line_array[int(i)].decode('gbk').encode("utf-8")
+                else:
+                    dic_vars['var' + i] = line_array[int(i)]
 
             email_title = create_title(dic_vars)
             email_message = create_message(dic_vars)
