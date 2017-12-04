@@ -8,8 +8,8 @@ import smtplib
 import mimetypes
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.Header import Header
-from email.mime.image import MIMEImage
+from email.header import Header
+from email.utils import parseaddr, formataddr
 import base64
 import time
 import datetime
@@ -29,6 +29,7 @@ g_frommail = 'root@localhost'
 g_smtp = ''
 g_passwd = ''
 g_columns = ''
+g_alias = ''
 g_port = 25
 g_log_folder = os.path.join(os.path.split(
     os.path.realpath(sys.argv[0]))[0], 'log')
@@ -36,7 +37,7 @@ g_log_folder = os.path.join(os.path.split(
 
 # 解析传进来的参数
 def parse_args():
-    global g_varfile, g_contentfile, g_titlefile, g_delaytime, g_log_folder, g_frommail, g_smtp, g_passwd, g_columns, g_port
+    global g_varfile, g_contentfile, g_titlefile, g_delaytime, g_log_folder, g_frommail, g_smtp, g_passwd, g_columns, g_port, g_alias
 
     parser = argparse.ArgumentParser(description='邮件群发系统')
     parser.add_argument('--file', nargs='?', required=True, help='变量文件')
@@ -44,6 +45,8 @@ def parse_args():
     parser.add_argument('--title', nargs='?', required=True, help='邮件标题文件')
     parser.add_argument('-t', nargs='?', required=False,
                         help='每封邮件间隔时间,如-t 30,60')
+    parser.add_argument("--alias", nargs="?", required=False,
+                        help="发件人别名，如果为空则默认使用邮件地址")
     parser.add_argument('--from', nargs='?', required=False, help='发件人邮件地址')
     parser.add_argument('--smtp', nargs='?', required=False, help='发件邮件服务器地址')
     parser.add_argument('--passwd', nargs='?',
@@ -76,11 +79,13 @@ def parse_args():
         g_columns = args['c']
     if args['port'] != None:
         g_port = args['port']
+    if args["alias"] != None:
+        g_alias = args["alias"]
 
 
 # 读取变量文件，获取收件人地址和所有变量
 def parse_var_file():
-    global g_varfile, g_delaytime, g_columns, g_frommail, g_smtp, g_passwd, g_port
+    global g_varfile, g_delaytime, g_columns, g_frommail, g_smtp, g_passwd, g_port, g_alias
 
     columns_array = g_columns.split(',')
 
@@ -102,7 +107,11 @@ def parse_var_file():
 
             # 拼接sendmail用的message，包含header和content
             msg = MIMEMultipart()
-            msg['From'] = g_frommail
+            if g_alias:
+                msg['From'] = formataddr(
+                    (Header(g_alias, 'utf-8').encode(), g_frommail))
+            else:
+                msg['From'] = g_frommail
             msg['To'] = to_mail
             msg['Subject'] = Header(email_title, charset='UTF-8')
 
