@@ -102,6 +102,9 @@ def parse_var_file():
                 if msg_code["encoding"] == "GB2312":
                     dic_vars[
                         'var' + i] = line_array[int(i)].decode('gbk').encode("utf-8")
+                elif msg_code["encoding"] == "utf-8":
+                    dic_vars[
+                        'var' + i] = line_array[int(i)].decode('utf-8')
                 else:
                     dic_vars['var' + i] = line_array[int(i)]
 
@@ -143,6 +146,7 @@ def create_title(vars):
     # Notice the use of trim_blocks, which greatly helps control whitespace.
     j2_env = Environment(loader=FileSystemLoader(THIS_DIR),
                          trim_blocks=True)
+
     # print vars
     return j2_env.get_template(This_file).render(vars)
 
