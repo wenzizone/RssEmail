@@ -101,7 +101,7 @@ def parse_var_file():
 
                 if msg_code["encoding"] == "GB2312":
                     dic_vars[
-                        'var' + i] = line_array[int(i)].decode('gbk').encode("utf-8")
+                        'var' + i] = line_array[int(i)].decode('gbk')
                 elif msg_code["encoding"] == "utf-8":
                     dic_vars[
                         'var' + i] = line_array[int(i)].decode('utf-8')
@@ -125,10 +125,9 @@ def parse_var_file():
             msg['Subject'] = Header(email_title, charset='UTF-8')
 
             # 添加邮件内容
-            #txt = MIMEText("这是邮件内容~~", _subtype='plain',  _charset='UTF-8')
+            txt = MIMEText(email_message, _subtype='plain',  _charset='UTF-8')
             # 添加html的邮件内容
-            txt = MIMEText(email_message,
-                           _subtype='html',  _charset='UTF-8')
+            #txt = MIMEText(email_message,_subtype='html',  _charset='UTF-8')
             msg.attach(txt)
 
             # 准备发送邮件
