@@ -18,6 +18,7 @@ import logging
 import chardet
 import random
 from jinja2 import Environment, FileSystemLoader
+from .sendmail_worker import *
 
 
 # global variables
@@ -27,6 +28,7 @@ g_titefile = ''
 g_delaytime = ''
 g_frommail = 'root@localhost'
 g_smtp = ''
+g_smtpuser = ''
 g_passwd = ''
 g_columns = ''
 g_alias = ''
@@ -37,7 +39,7 @@ g_log_folder = os.path.join(os.path.split(
 
 # 解析传进来的参数
 def parse_args():
-    global g_varfile, g_contentfile, g_titlefile, g_delaytime, g_log_folder, g_frommail, g_smtp, g_passwd, g_columns, g_port, g_alias
+    global g_varfile, g_contentfile, g_titlefile, g_delaytime, g_log_folder, g_frommail, g_smtp, g_passwd, g_columns, g_port, g_alias, g_smtpuser
 
     parser = argparse.ArgumentParser(description='邮件群发系统')
     parser.add_argument('--file', nargs='?', required=True, help='变量文件')
@@ -49,6 +51,7 @@ def parse_args():
                         help='发件人别名，如果为空,默认使用邮件地址')
     parser.add_argument('--from', nargs='?', required=False, help='发件人邮件地址')
     parser.add_argument('--smtp', nargs='?', required=False, help='发件邮件服务器地址')
+    parser.add_argument('--user', nargs='?', required=False, help='发送邮件服务器登录账号')
     parser.add_argument('--passwd', nargs='?',
                         required=False, help='发件邮件服务器登录密码')
     parser.add_argument('--port', nargs='?',
@@ -73,6 +76,8 @@ def parse_args():
         g_frommail = args['from']
     if args['smtp'] != None:
         g_smtp = args['smtp']
+    if args['smtp_user'] != None:
+        g_smtpuser = args['smtp_user']
     if args['passwd'] != None:
         g_passwd = args['passwd']
     if args['c'] != None:
@@ -131,7 +136,15 @@ def parse_var_file():
             msg.attach(txt)
 
             # 准备发送邮件
-            sendmail(to_mail, msg, g_frommail, g_port, g_smtp, g_passwd)
+            sendmail.delay(
+                jason.dumps({
+                    'mail_to':to_mail,
+                    'mail_msg': msg,
+                    'mail_from': g_frommail,
+                    'smtp_port': g_port,
+                    'smtp_server': g_smtp,
+                    'smtp_pass': g_passwd
+                    })
 
 
 # 从模板文件生成邮件主题
@@ -259,7 +272,7 @@ def sendmail(to_email, message, from_email, port, domain='localhost', s_passwd='
 
 # 主程序入口
 def main():
-    global g_varfile, g_contentfile, g_titlefile, g_delaytime, g_log_folder, g_frommail, g_smtp, g_passwd, g_columns
+    global g_varfile, g_contentfile, g_titlefile, g_delaytime, g_log_folder, g_frommail, g_smtp, g_passwd, g_columns, g_smtpuser
 
     parse_args()
 
@@ -272,7 +285,9 @@ def main():
     logger.info('邮件主题文件:     %s' % g_titlefile)
     logger.info('邮件内容文件:     %s' % g_contentfile)
     logger.info('邮件间隔时间:     %s' % g_delaytime)
+    logger.info('发件人邮件地址:   %s' % g_frommail)
     logger.info('发送邮件服务器地址:  %s' % g_smtp)
+    logger.info('发送邮件服务器登录账号: %s' % g_smtpuser)
     logger.info('发送邮件服务器端口:  %s' % g_port)
     logger.info('log folder: %s' % g_log_folder)
     logger.info('==================================================')

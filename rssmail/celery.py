@@ -11,7 +11,7 @@ class Config:
     result_serializer = 'json'
     accept_content = ['json']
     imports = (
-        'RssEmail.sendmail_worker'
+        'rssmail.sendmail_worker'
     )
     task_queues = (
         Queue('default', Exchange('default'), routing_key='default'),
@@ -20,11 +20,11 @@ class Config:
     )
 
     task_routes = {
-        'RssEmail.worker.sendmail': {'queue': 'q_sendmail', 'routing_key': 'q_sendmail'},
+        'rssmail.sendmail_worker.sendmail': {'queue': 'q_sendmail', 'routing_key': 'q_sendmail'},
     }
 
-app_rssemail = Celery('rssemail')
-app_rssemail.config_from_object(Config)
+app_rssmail = Celery('rssmail')
+app_rssmail.config_from_object(Config)
 
 if __name__ == '__main__':
-    app_rssemail.worker_main()
+    app_rssmail.worker_main()
