@@ -161,7 +161,7 @@ def parse_var_file():
 
             # print "email_tile: %s" % email_title
             # print "email_message: %s" % email_message
-
+            '''
             # 拼接sendmail用的message，包含header和content
             msg = MIMEMultipart()
             if g_alias:
@@ -184,20 +184,22 @@ def parse_var_file():
                 email_message = email_message.replace('\n','<br>\n')
             txt = MIMEText(email_message, _subtype='html', _charset='UTF-8')
             msg.attach(txt)
-
+            '''
             # 准备发送邮件
             if len(g_test)==0:
                 #sendmail(g_from, to_mail, msg, g_smtp, g_account, g_passwd, g_port)
                 sendmail.delay(
                     json.dumps({
                         'mail_to':to_mail,
-                        'mail_msg': msg,
                         'mail_from': g_from,
                         'smtp_port': g_port,
                         'smtp_server': g_smtp,
                         'smtp_user': g_account,
                         'smtp_pass': g_passwd,
-                        'send_dely': float(generate_random_sleeptime())
+                        'send_dely': float(generate_random_sleeptime()),
+                        'mail_title': email_title,
+                        'mail_message': email_message,
+                        'alias': g_alias
                         })
                     )
             else:
@@ -205,13 +207,15 @@ def parse_var_file():
                 sendmail.delay(
                     json.dumps({
                         'mail_to': g_test,
-                        'mail_msg': msg,
                         'mail_from': g_from,
                         'smtp_port': g_port,
                         'smtp_server': g_smtp,
                         'smtp_user': g_account,
                         'smtp_pass': g_passwd,
-                        'send_dely': float(generate_random_sleeptime())
+                        'send_dely': float(generate_random_sleeptime()),
+                        'mail_title': email_title,
+                        'mail_message': email_message,
+                        'alias': g_alias
                         })
                     )
                 sys.exit()

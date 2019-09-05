@@ -5,6 +5,11 @@ from .celery import app_rssmail
 import json
 import smtplib
 import time
+import mimetypes
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from email.utils import parseaddr, formataddr
 
 
 ## 发送邮件主程序 ##
@@ -16,16 +21,19 @@ import time
 # mail_msg: 邮件内容
 # smtp_port: 邮件服务器端口，默认25
 # send_dely: 邮件发送延时
-@app_rssmail.task(bind=True, queue='q_sendmail')
-def sendmail(self,data):
-    #d['mail_to'], d['mail_msg'], d['mail_from'], port, d['smtp_server']='localhost', d['smtp_pass']=''):
-    global g_log_folder
+# mail_title: 邮件主题
+# mail_message: 邮件正文
+# alias: 发件人别名
 
-    d = json.load(data)
+@app_rssmail.task(bind=True, queue='q_sendmail')
+def sendmail(self, data):
+    d = json.loads(data)
+
+    mail_msg = gen_mailmessage(d['alias'], d['mail_from'], d['mail_to'], d['mail_title'], d['mail_message'])
 
     time.sleep(d['send_dely'])
     try:
-        printf("connect to smtp server %s" % d['smtp_server'])
+        print("connect to smtp server {}".format(d['smtp_server']))
         if not d['smtp_port']:
             d['smtp_port'] = 25
         #print d['smtp_port']
@@ -42,10 +50,10 @@ def sendmail(self,data):
         smtp.set_debuglevel(0)
         if d['smtp_user'] or d['smtp_pass']:
             smtp.login(d['smtp_user'], d['smtp_pass'])
-        printf("start to send email to %s" % d['mail_to'])
-        smtp.sendmail(d['mail_from'], d['mail_to'], d['mail_msg'].as_string())
+        print("start to send email to {}".format(d['mail_to']))
+        smtp.sendmail(d['mail_from'], d['mail_to'], mail_msg.as_string())
         smtp.close()
-        printf("%s to %s success\n" % (from_email, d['mail_to']))
+        print("From {} send to {} success\n".format(d['mail_from'], d['mail_to']))
     # except smtplib.SMTPResponseException, e:
     #     errcode = getattr(e, 'smtp_code', -1)
     #     errmsg = getattr(e, 'smtp_error', 'ignore')
@@ -67,4 +75,29 @@ def sendmail(self,data):
         # else:
         #     logs(0, e)
         print(e)
-        printf("%s to %s faild" % (from_email, d['mail_to']))
+        print("from {} send to {} faild".format(d['mail_from'], d['mail_to']))
+
+# 生成邮件内容
+def gen_mailmessage(alias, mail_from, mail_to, mail_title, mail_message):
+    # 拼接sendmail用的message，包含header和content
+    msg = MIMEMultipart()
+    if alias:
+        msg['From'] = formataddr(
+            (Header(alias, 'utf-8').encode(), mail_from))
+    else:
+        msg['From'] = mail_from
+
+    msg['To'] = mail_to
+    msg['Subject'] = Header(mail_title, charset='UTF-8')
+
+    # 添加邮件内容
+    #txt = MIMEText(mail_message, _subtype='plain', _charset='UTF-8')
+    # 添加html的邮件内容
+    #txt = MIMEText(mail_message, _subtype='html', _charset='UTF-8')
+    mail_message_lower = mail_message.lower()
+    if mail_message_lower.find('<html')==-1 and mail_message_lower.find('<p')==-1 and mail_message_lower.find('<br')==-1:
+        mail_message = mail_message.replace('\n','<br>\n')
+    txt = MIMEText(mail_message, _subtype='html', _charset='UTF-8')
+    msg.attach(txt)
+
+    return msg
