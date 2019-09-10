@@ -2,21 +2,11 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import
 
-import csv
 import sys
 import os
-import smtplib
-import mimetypes
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.header import Header
-from email.utils import parseaddr, formataddr
-import base64
-import time
 import datetime
 import argparse
 import logging
-import chardet
 import random
 from jinja2 import Environment, FileSystemLoader
 from .sendmail_worker import *

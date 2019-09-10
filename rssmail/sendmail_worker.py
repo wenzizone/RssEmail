@@ -5,14 +5,13 @@ from .celery import app_rssmail
 import json
 import smtplib
 import time
-import mimetypes
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
-from email.utils import parseaddr, formataddr
+from email.utils import formataddr
 
 
-## 发送邮件主程序 ##
+# 发送邮件主程序 ##
 # smtp_server: 邮件服务器地址
 # smtp_user: 邮件服务器登录账号
 # mail_from: 发送人的email地址
@@ -36,16 +35,16 @@ def sendmail(self, data):
         print("connect to smtp server {}".format(d['smtp_server']))
         if not d['smtp_port']:
             d['smtp_port'] = 25
-        #print d['smtp_port']
+        # print d['smtp_port']
         if int(d['smtp_port']) == 465 or int(d['smtp_port']) == 587:
-            #print '1111'
-            #sys.exit()
+            # print '1111'
+            # sys.exit()
             # smtp = smtplib.SMTP_SSL('%s' % (d['smtp_server']), d['smtp_port'])
             smtp = smtplib.SMTP('%s' % (d['smtp_server']), d['smtp_port'])
             smtp.starttls()
         else:
-            #print '2222'
-            #sys.exit()
+            # print '2222'
+            # sys.exit()
             smtp = smtplib.SMTP('%s' % (d['smtp_server']), d['smtp_port'])
         smtp.set_debuglevel(0)
         if d['smtp_user'] or d['smtp_pass']:
@@ -77,6 +76,7 @@ def sendmail(self, data):
         print(e)
         print("from {} send to {} faild".format(d['mail_from'], d['mail_to']))
 
+
 # 生成邮件内容
 def gen_mailmessage(alias, mail_from, mail_to, mail_title, mail_message):
     # 拼接sendmail用的message，包含header和content
@@ -91,9 +91,9 @@ def gen_mailmessage(alias, mail_from, mail_to, mail_title, mail_message):
     msg['Subject'] = Header(mail_title, charset='UTF-8')
 
     # 添加邮件内容
-    #txt = MIMEText(mail_message, _subtype='plain', _charset='UTF-8')
+    # txt = MIMEText(mail_message, _subtype='plain', _charset='UTF-8')
     # 添加html的邮件内容
-    #txt = MIMEText(mail_message, _subtype='html', _charset='UTF-8')
+    # txt = MIMEText(mail_message, _subtype='html', _charset='UTF-8')
     mail_message_lower = mail_message.lower()
     if mail_message_lower.find('<html')==-1 and mail_message_lower.find('<p')==-1 and mail_message_lower.find('<br')==-1:
         mail_message = mail_message.replace('\n','<br>\n')
