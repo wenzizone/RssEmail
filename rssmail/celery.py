@@ -4,8 +4,8 @@ from celery import Celery
 from kombu import Exchange, Queue
 
 class Config:
-    #broker_url = 'redis://52.69.43.74:6379/0'
-    broker_url = 'redis://:M8Lu9lMONSYZEZAdXTPw0frMhtvl0fkr@redis-11880.c54.ap-northeast-1-2.ec2.cloud.redislabs.com:11880'
+    broker_url = 'redis://localhost:6379/0'
+    #broker_url = 'redis://:M8Lu9lMONSYZEZAdXTPw0frMhtvl0fkr@redis-11880.c54.ap-northeast-1-2.ec2.cloud.redislabs.com:11880'
     enable_utc = True
     task_serializer = 'json'
     result_serializer = 'json'
